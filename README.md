@@ -1,3 +1,13 @@
+# Generate code (for auto-completion)
+
+## Install Thrift
+
+> sudo apt install thrift-compiler
+
+## Generate python code
+
+> thrift -gen py -out . database.thrift
+
 # Download data from geofabrick (restriction of https://planet.openstreetmap.org/ for France)
 
 > uv run download_france_binary.py
@@ -6,6 +16,6 @@
 
 > uv run generate_france_dict.py
 
-# Get final json
+# Get final binaries (see "Generate code" before)
 
-> uv run generate_france_json.py
+> uv run generate_france_databases.py

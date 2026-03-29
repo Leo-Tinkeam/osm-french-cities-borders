@@ -7,4 +7,6 @@ requires-python = ">=3.13"
 dependencies = [
     "osmium>=4.3.0",
     "pydantic>=2.12.5",
+    "shapely>=2.1.2",
+    "thrift>=0.22.0",
 ]

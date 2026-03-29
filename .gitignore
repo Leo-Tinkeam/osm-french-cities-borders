@@ -12,4 +12,7 @@ wheels/
 # Generated files
 france-latest.osm.pbf
 france_dict.pkl
-french_cities.json
+name_to_border.bin
+name_to_center.bin
+database/
+__init__.py
