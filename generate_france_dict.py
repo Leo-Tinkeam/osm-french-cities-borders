@@ -1,6 +1,7 @@
 import osmium
 
 binary_file_name = "france-latest.osm.pbf"
+dict_file_name = "france_dict.pkl"
 
 class City:
     def __init__(self, name: str, border):
@@ -16,10 +17,6 @@ class WayDescriptor:
         self.id: int = id
         self.role: str = role
 
-cities: dict[int, City] = {}
-ways = {}
-nodes = {}
-
 class CityHandler(osmium.SimpleHandler):
     def relation(self, r):
         tags = r.tags
@@ -29,16 +26,6 @@ class CityHandler(osmium.SimpleHandler):
             
             border = Border([WayDescriptor(m.ref, m.role) for m in r.members])
             cities[r.id] = City(name=tags.get("name"), border=border)
-
-handler = CityHandler()
-handler.apply_file(binary_file_name)
-print("Number of cities :", len(cities))
-
-way_id_needed: set[int] = set()
-for key, value in cities.items():
-    for way in value.border.related_objects:
-        way_id_needed.add(way.id)
-print("Way_Id needed :", len(way_id_needed))
 
 class WayCollector(osmium.SimpleHandler):
     def __init__(self):
@@ -53,16 +40,6 @@ class WayCollector(osmium.SimpleHandler):
                 print("Number of ways :", len(ways), "of", len(way_id_needed), "(predicted)")
                 self.count = 0
 
-handler = WayCollector()
-handler.apply_file(binary_file_name, locations=False)
-print("End of ways processing !", len(ways), "ways in total")
-
-node_id_needed = set()
-for key, value in ways.items():
-    for id in value:
-        node_id_needed.add(id)
-print("Node_Id needed :", len(node_id_needed))
-
 class NodeCollector(osmium.SimpleHandler):
     def __init__(self):
         super().__init__()
@@ -76,11 +53,36 @@ class NodeCollector(osmium.SimpleHandler):
                 print("Number of nodes :", len(nodes), "of", len(node_id_needed))
                 self.count = 0
 
-handler = NodeCollector()
-handler.apply_file(binary_file_name, locations=True)
-print("End of nods processing!", len(nodes), "nodes in total")
+if __name__ == "__main__":
+    cities: dict[int, City] = {}
+    ways = {}
+    nodes = {}
 
-import pickle
-france_dict = {"cities": cities, "ways": ways, "nodes": nodes}
-with open('france_dict.pkl', 'wb') as f:
-    pickle.dump(france_dict, f)
+    handler = CityHandler()
+    handler.apply_file(binary_file_name)
+    print("Number of cities :", len(cities))
+
+    way_id_needed: set[int] = set()
+    for key, value in cities.items():
+        for way in value.border.related_objects:
+            way_id_needed.add(way.id)
+    print("Way_Id needed :", len(way_id_needed))
+
+    handler = WayCollector()
+    handler.apply_file(binary_file_name, locations=False)
+    print("End of ways processing !", len(ways), "ways in total")
+
+    node_id_needed = set()
+    for key, value in ways.items():
+        for id in value:
+            node_id_needed.add(id)
+    print("Node_Id needed :", len(node_id_needed))
+
+    handler = NodeCollector()
+    handler.apply_file(binary_file_name, locations=True)
+    print("End of nods processing!", len(nodes), "nodes in total")
+
+    import pickle
+    france_dict = {"cities": cities, "ways": ways, "nodes": nodes}
+    with open(dict_file_name, 'wb') as f:
+        pickle.dump(france_dict, f)

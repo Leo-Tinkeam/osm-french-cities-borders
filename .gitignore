@@ -12,3 +12,4 @@ wheels/
 # Generated files
 france-latest.osm.pbf
 france_dict.pkl
+french_cities.json
