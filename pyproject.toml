@@ -4,4 +4,6 @@ version = "0.1.0"
 description = "Create a Json that contains border data of every cities of France and their names"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "osmium>=4.3.0",
+]
